@@ -2,6 +2,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+database.db
+.idea/uiDesigner.xml
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
