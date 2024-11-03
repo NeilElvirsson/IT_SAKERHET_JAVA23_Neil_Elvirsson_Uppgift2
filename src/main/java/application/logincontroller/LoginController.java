@@ -1,9 +1,11 @@
 package application.logincontroller;
 
+import application.authorization.Authorization;
 import application.responses.TokenResponse;
 import domain.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +20,16 @@ import java.util.Date;
 
 @RestController
 public class LoginController {
-    @Value("${jwt.secretkey}")
-    private String secretKey;
+
+
+    @Autowired
+    public Authorization authorization;
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody Login login) {
 
         SqliteUserRepository sqliteUserRepository = new SqliteUserRepository();
+       // Authorization authorization = new Authorization();
 
         String hashedPassword = "";
 
@@ -39,21 +44,8 @@ public class LoginController {
 
         if(user != null) {
 
-            String issuer = "NeilToken";
-            Date now = new Date();
-            Date expiration = new Date(now.getTime() + 15*60*1000);
+            TokenResponse tokenResponse = new TokenResponse(authorization.createToken(user.getUserName()));
 
-
-            String token = Jwts.builder()
-                    .subject(user.getUserName())
-                    .expiration(expiration)
-                    .issuer(issuer)
-                    .signWith(SignatureAlgorithm.HS256, secretKey)
-                    .compact();
-
-
-
-            TokenResponse tokenResponse = new TokenResponse(token);
             return new ResponseEntity<>(tokenResponse, HttpStatus.OK);
 
         }

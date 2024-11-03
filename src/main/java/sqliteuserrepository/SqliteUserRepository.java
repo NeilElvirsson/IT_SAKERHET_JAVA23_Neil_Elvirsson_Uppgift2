@@ -1,7 +1,7 @@
 package sqliteuserrepository;
 
 import domain.User;
-import userrepository.UserRepository;
+import application.repositories.UserRepository;
 
 import java.sql.*;
 

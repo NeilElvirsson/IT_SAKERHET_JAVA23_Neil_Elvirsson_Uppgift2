@@ -1,4 +1,4 @@
-package userrepository;
+package application.repositories;
 
 import domain.User;
 

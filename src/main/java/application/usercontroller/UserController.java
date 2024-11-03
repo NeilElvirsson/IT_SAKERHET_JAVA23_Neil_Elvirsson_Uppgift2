@@ -1,10 +1,11 @@
 package application.usercontroller;
 
+import application.authorization.Authorization;
 import domain.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import passwordhasher.PasswordHasher;
 import sqliteuserrepository.SqliteUserRepository;
 
@@ -14,6 +15,8 @@ import java.security.NoSuchAlgorithmException;
 @RestController
 public class UserController {
 
+    @Autowired
+    private Authorization authorization;
     @PostMapping("/users/create")
     public ResponseEntity<Void> createUser(@RequestBody CreateUser createUser) {
 
@@ -57,6 +60,21 @@ public class UserController {
         }
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/users/me")
+    public ResponseEntity<Me> me (@RequestHeader("Authorization") String token) {
+
+        String userName = authorization.validateToken(token);
+
+        if(userName == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        Me me = new Me();
+        me.setUserName(userName);
+        return  new ResponseEntity<Me>(me, HttpStatusCode.valueOf(200));
+
     }
 
 }
